@@ -1,8 +1,10 @@
 import {
     jobListSearchEl,
     jobDetailsContentEl,
-    spinnerJobDetailsEl
 } from '../common.js';
+
+import renderSpinner from './Spinner.js';
+
 
 const clickHandler = (e) => {
     e.preventDefault();
@@ -14,7 +16,8 @@ const clickHandler = (e) => {
     jobItemEl.classList.add('job-item--active');
 
     jobDetailsContentEl.innerHTML = '';
-    spinnerJobDetailsEl.classList.add('spinner--visible');
+
+    renderSpinner('job-details');
 
     const id = jobItemEl.children[0].getAttribute('href');
     fetch(`https://bytegrad.com/course-assets/js/2/api/jobs/${id}`)
@@ -28,8 +31,9 @@ const clickHandler = (e) => {
         })
         .then(data => {
             const { jobItem } = data;
+            
 
-            spinnerJobDetailsEl.classList.remove('spinner--visible');
+            renderSpinner('job-details');
 
             const jobDetailsHTML = `
                 <img src="${jobItem.coverImgURL}" alt="#" class="job-details__cover-img">
