@@ -1,6 +1,7 @@
 import {
     errorTextEl,
-    errorEl
+    errorEl,
+    DEFAULT_DISPLAY_TIME
 } from '../common.js';
 
 const renderError = (message = 'An error occurred') => {
@@ -8,7 +9,7 @@ const renderError = (message = 'An error occurred') => {
     errorEl.classList.add('error--visible');
     setTimeout(() => {
         errorEl.classList.remove('error--visible');
-    }, 3500);
+    }, DEFAULT_DISPLAY_TIME);
 };
 
 export default renderError;
