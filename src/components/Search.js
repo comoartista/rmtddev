@@ -4,13 +4,14 @@ import {
     jobListSearchEl,
     numberEl,
     BASE_API_URL,
+    getData,
 } from '../common.js';
 
 import renderError from './Error.js';
 import renderSpinner from './Spinner.js';
 import renderJobList from './JobList.js';
 
-const submitHandler = event => {
+const submitHandler = async event => {
     event.preventDefault();
     const searchText = searchInputEl.value;
 
@@ -31,33 +32,50 @@ const submitHandler = event => {
     //render spinner 
     renderSpinner('search');
 
-    //fetch search results 
-    fetch(`${BASE_API_URL}/jobs?search=${searchText}`)
-        .then(response => {
-            if (!response.ok) { //4xx, 5xx status code
-                throw new Error('Resource issue (e.g. resource doesn\'t exist ) or server issue');
-            }
-            return response.json();
-        })
-        .then(data => {
-            //extract job items
-            const { jobItems } = data;
+    try { 
+        //fetch search results 
+        const data = await getData(`${BASE_API_URL}/jobs?search=${searchText}`);
 
-            renderSpinner('search');
+        //extract job item
+        const { jobItems } = data;
 
-            numberEl.textContent = jobItems.length;
+        renderSpinner('search');
 
-            renderJobList(jobItems);
+        numberEl.textContent = jobItems.length;
+
+        renderJobList(jobItems);
+        
+    } catch (error) {
+        renderSpinner('search');
+        renderError(error.message);
+    }
+
+    // fetch(`${BASE_API_URL}/jobs?search=${searchText}`)
+    //     .then(response => {
+    //         if (!response.ok) { //4xx, 5xx status code
+    //             throw new Error('Resource issue (e.g. resource doesn\'t exist ) or server issue');
+    //         }
+    //         return response.json();
+    //     })
+    //     .then(data => {
+
+    //         //extract job items
+    //         const { jobItems } = data;
+
+    //         renderSpinner('search');
+
+    //         numberEl.textContent = jobItems.length;
+
+    //         renderJobList(jobItems);
             
-            jobListSearchEl.addEventListener('click', (e) => {
-                e.preventDefault();
-            })  
-        })
-        .catch(error => { // network problem or other errors (e.g. trying to parse something not JSON as JSON)
-            renderSpinner('search');
-            renderError(error.message);
-        });
-
+    //         jobListSearchEl.addEventListener('click', (e) => {
+    //             e.preventDefault();
+    //         })  
+    //     })
+    //     .catch(error => { // network problem or other errors (e.g. trying to parse something not JSON as JSON)
+    //         renderSpinner('search');
+    //         renderError(error.message);
+    //     });
 };
 
 searchFormEl.addEventListener('submit', submitHandler);

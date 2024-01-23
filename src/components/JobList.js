@@ -2,6 +2,7 @@ import {
     jobListSearchEl,
     jobDetailsContentEl,
     BASE_API_URL,
+    getData,
 } from '../common.js';
 
 import renderError from './Error.js';
@@ -34,10 +35,10 @@ const renderJobList = jobItems => {
     });  
 };
 
-const clickHandler = (e) => {
-    e.preventDefault();
+const clickHandler = async event => {
+    event.preventDefault();
 
-    const jobItemEl = e.target.closest('.job-item');
+    const jobItemEl = event.target.closest('.job-item');
     
     document.querySelector('.job-item--active')?.classList.remove('job-item--active');
 
@@ -48,27 +49,24 @@ const clickHandler = (e) => {
     renderSpinner('job-details');
 
     const id = jobItemEl.children[0].getAttribute('href');
-    fetch(`${BASE_API_URL}/jobs/${id}`)
-        .then(response => {
-            if (!response.ok) { //4xx, 5xx status code
-                throw new Error('Resource issue (e.g. resource doesn\'t exist ) or server issue');
-            }
 
-            return response.json();
-        })
-        .then(data => {
-            const { jobItem } = data;
-            
-            renderSpinner('job-details');
+    try { 
+        const data = await getData(`${BASE_API_URL}/jobs/${id}`);
 
-            renderJobDetails(jobItem);
-        })
-        .catch(error => { // network problem or other errors (e.g. trying to parse something not JSON as JSON)
-            renderSpinner('job-details');
-            renderError(error.message);
-        });
+        //extract job item
+        const { jobItem } = data;
+        
+        renderSpinner('job-details');
 
-}
+        renderJobDetails(jobItem);
+
+    } catch {
+        renderSpinner('job-details');
+        renderError(error.message);
+    }
+
+};
+
 jobListSearchEl.addEventListener('click', clickHandler);
 
 export default renderJobList;
