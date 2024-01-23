@@ -1,7 +1,8 @@
 import {
+    BASE_API_URL,
+    state,
     jobListSearchEl,
     jobDetailsContentEl,
-    BASE_API_URL,
     getData,
 } from '../common.js';
 
@@ -9,8 +10,8 @@ import renderError from './Error.js';
 import renderJobDetails from './JobDetails.js';
 import renderSpinner from './Spinner.js';
 
-const renderJobList = jobItems => {
-    jobItems.slice(0, 7).map((jobItem) => {
+const renderJobList = () => {
+    state.searchJobItems.slice(0, 7).map(jobItem => {
         const newJobItemHTML = `
             <li class="job-item">
                 <a class="job-item__link" href="${jobItem.id}">
