@@ -3,8 +3,10 @@ import {
     jobDetailsContentEl,
     BASE_API_URL,
 } from '../common.js';
-import renderSpinner from './Spinner.js';
+
+import renderError from './Error.js';
 import renderJobDetails from './JobDetails.js';
+import renderSpinner from './Spinner.js';
 
 const renderJobList = jobItems => {
     jobItems.slice(0, 7).map((jobItem) => {
@@ -48,9 +50,8 @@ const clickHandler = (e) => {
     const id = jobItemEl.children[0].getAttribute('href');
     fetch(`${BASE_API_URL}/jobs/${id}`)
         .then(response => {
-            if (!response.ok) {
-                console.log('Something went wrong');
-                return;
+            if (!response.ok) { //4xx, 5xx status code
+                throw new Error('Resource issue (e.g. resource doesn\'t exist ) or server issue');
             }
 
             return response.json();
@@ -62,7 +63,10 @@ const clickHandler = (e) => {
 
             renderJobDetails(jobItem);
         })
-        .catch(error => console.log(error));
+        .catch(error => { // network problem or other errors (e.g. trying to parse something not JSON as JSON)
+            renderSpinner('job-details');
+            renderError(error.message);
+        });
 
 }
 jobListSearchEl.addEventListener('click', clickHandler);

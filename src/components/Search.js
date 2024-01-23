@@ -34,11 +34,9 @@ const submitHandler = event => {
     //fetch search results 
     fetch(`${BASE_API_URL}/jobs?search=${searchText}`)
         .then(response => {
-            if (!response.ok) {
-                console.log('Something went wrong');
-                return;
+            if (!response.ok) { //4xx, 5xx status code
+                throw new Error('Resource issue (e.g. resource doesn\'t exist ) or server issue');
             }
-
             return response.json();
         })
         .then(data => {
@@ -55,7 +53,10 @@ const submitHandler = event => {
                 e.preventDefault();
             })  
         })
-        .catch(error => console.log(error));
+        .catch(error => { // network problem or other errors (e.g. trying to parse something not JSON as JSON)
+            renderSpinner('search');
+            renderError(error.message);
+        });
 
 };
 
