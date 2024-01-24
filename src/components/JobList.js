@@ -1,5 +1,6 @@
 import {
     BASE_API_URL,
+    RESULTS_PER_PAGE,
     state,
     jobListSearchEl,
     jobDetailsContentEl,
@@ -11,7 +12,9 @@ import renderJobDetails from './JobDetails.js';
 import renderSpinner from './Spinner.js';
 
 const renderJobList = () => {
-    state.searchJobItems.slice(0, 7).map(jobItem => {
+    jobListSearchEl.innerHTML = '';
+
+    state.searchJobItems.slice(state.currentPage * RESULTS_PER_PAGE - RESULTS_PER_PAGE, state.currentPage * RESULTS_PER_PAGE).map(jobItem => {
         const newJobItemHTML = `
             <li class="job-item">
                 <a class="job-item__link" href="${jobItem.id}">
