@@ -56,8 +56,6 @@ const clickHandler = async event => {
     
     document.querySelectorAll('.job-item--active').forEach(jobItemWithActiveClass => jobItemWithActiveClass.classList.remove('job-item--active'));
 
-    jobItemEl.classList.add('job-item--active');
-
     jobDetailsContentEl.innerHTML = '';
 
     renderSpinner('job-details');
@@ -66,6 +64,8 @@ const clickHandler = async event => {
 
     const allJobItem = [...state.searchJobItems, ...state.bookmarkJobItems];
     state.activeJobItem = allJobItem.find(jobItem => jobItem.id === +id);
+
+    renderJobList();
 
     history.pushState(null, '', `/#${id}`);
 
